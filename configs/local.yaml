@@ -1,0 +1,13 @@
+app:
+  name: "chat-based-websockets"
+  version: "v1.0.0"
+
+http:
+  port: ":8080"
+  timeout: 10s
+
+postgres:
+  poolMax: 2
+
+logger:
+  logLevel: "debug"
