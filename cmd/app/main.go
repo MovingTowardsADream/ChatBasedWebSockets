@@ -1,12 +1,17 @@
 package main
 
 import (
+	"ChatBasedWebSockets/internal/app"
 	"ChatBasedWebSockets/internal/config"
-	"fmt"
+	"ChatBasedWebSockets/pkg/logger"
 )
 
 func main() {
 	cfg := config.MustLoad()
 
-	fmt.Println(cfg)
+	log := logger.SetupLogger(cfg.Log.Level)
+
+	application := app.New(log, cfg)
+
+	_ = application
 }
