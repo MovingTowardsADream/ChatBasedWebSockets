@@ -17,9 +17,9 @@ type authRoutes struct {
 	authUseCase Authorization
 }
 
-func newAuthRoutes(handler *gin.RouterGroup, auc usecase.AuthUseCase) {
+func newAuthRoutes(handler *gin.RouterGroup, auc *usecase.AuthUseCase) {
 	r := &authRoutes{
-		authUseCase: &auc,
+		authUseCase: auc,
 	}
 
 	handler.POST("/sign-up", r.signUp)

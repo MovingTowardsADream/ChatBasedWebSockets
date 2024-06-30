@@ -24,7 +24,7 @@ type AuthUseCase struct {
 	tokenTTL       time.Duration
 }
 
-func NewAuth(log *slog.Logger, auth Authorization,
+func NewAuthUseCase(log *slog.Logger, auth Authorization,
 	signKey string, passwordHasher hasher.PasswordHasher, tokenTTL time.Duration,
 ) *AuthUseCase {
 	return &AuthUseCase{

@@ -10,7 +10,7 @@ type AuthRepo struct {
 	pg *postgres.Postgres
 }
 
-func New(pg *postgres.Postgres) *AuthRepo {
+func NewAuthRepo(pg *postgres.Postgres) *AuthRepo {
 	return &AuthRepo{pg: pg}
 }
 
