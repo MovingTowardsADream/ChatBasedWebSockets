@@ -1,6 +1,7 @@
 app:
   name: "chat-based-websockets"
   version: "v1.0.0"
+  tokenTTL: 1h
 
 http:
   port: ":8080"

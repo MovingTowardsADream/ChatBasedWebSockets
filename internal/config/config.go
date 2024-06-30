@@ -22,8 +22,9 @@ type (
 	}
 
 	App struct {
-		Name    string `env:"APP_NAME"            env-default:"chat-based-websockets" yaml:"name"`
-		Version string `env:"APP_VERSION"         env-default:"1.0.0"         yaml:"version"`
+		Name     string        `env:"APP_NAME"            env-default:"chat-based-websockets" yaml:"name"`
+		Version  string        `env:"APP_VERSION"         env-default:"1.0.0"         yaml:"version"`
+		TokenTTL time.Duration `yaml:"token_ttl" env-default:"1h"`
 	}
 
 	HTTP struct {

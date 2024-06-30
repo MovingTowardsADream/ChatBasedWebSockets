@@ -14,9 +14,9 @@ type App struct {
 
 func New(log *slog.Logger, cfg *config.Config) *App {
 
-	// Connect postgres db
+	// Connect postgresdb db
 	pg, err := postgres.NewPostgresDB(cfg.PG.URL, postgres.MaxPoolSize(cfg.PG.PoolMax))
 	if err != nil {
-		panic("app - Run - postgres.NewPostgresDB: " + err.Error())
+		panic("app - Run - postgresdb.NewPostgresDB: " + err.Error())
 	}
 }
