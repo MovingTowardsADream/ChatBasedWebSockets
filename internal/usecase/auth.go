@@ -16,19 +16,16 @@ type Authorization interface {
 }
 
 type AuthUseCase struct {
-	l              *slog.Logger
-	auth           Authorization
+	l    *slog.Logger
+	auth Authorization
+
 	signKey        string
 	passwordHasher hasher.PasswordHasher
 	tokenTTL       time.Duration
 }
 
-func New(
-	log *slog.Logger,
-	auth Authorization,
-	signKey string,
-	passwordHasher hasher.PasswordHasher,
-	tokenTTL time.Duration,
+func NewAuth(log *slog.Logger, auth Authorization,
+	signKey string, passwordHasher hasher.PasswordHasher, tokenTTL time.Duration,
 ) *AuthUseCase {
 	return &AuthUseCase{
 		l:              log,
@@ -69,7 +66,7 @@ func (auc *AuthUseCase) GenerateToken(ctx context.Context, username, password st
 func (auc *AuthUseCase) ParseToken(accessToken string) (string, error) {
 	token, err := jwt.ParseWithClaims(accessToken, &tokenClaims{}, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
-			return nil, errors.New("Error")
+			return nil, errors.New("invalid signing method")
 		}
 
 		return []byte(auc.signKey), nil

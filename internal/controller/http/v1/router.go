@@ -10,7 +10,7 @@ import (
 	"net/http"
 )
 
-func NewRouter(handler *gin.Engine, l *slog.Logger, auc *usecase.AuthUseCase) {
+func NewRouter(handler *gin.Engine, l *slog.Logger, auc usecase.AuthUseCase) {
 	handler.Use(gin.Logger())
 	handler.Use(gin.Recovery())
 
@@ -32,6 +32,6 @@ func NewRouter(handler *gin.Engine, l *slog.Logger, auc *usecase.AuthUseCase) {
 
 	h := handler.Group("/api/v1")
 	{
-		newUsersRoutes(h, u.EditInfo, l)
+		newUsersRoutes(h)
 	}
 }
