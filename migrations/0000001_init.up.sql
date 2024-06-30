@@ -18,7 +18,7 @@ CREATE TABLE IF NOT EXISTS users
     email TEXT not null unique,
     username TEXT not null unique,
     password TEXT not null,
-    time TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP
+    created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE INDEX IF NOT EXISTS users_idx ON users(id);
