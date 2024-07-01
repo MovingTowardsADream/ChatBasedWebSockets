@@ -47,6 +47,7 @@ func (ar *AuthRepo) CreateUser(ctx context.Context, user entity.User) (string, e
 }
 
 func (ar *AuthRepo) GetUser(ctx context.Context, username, password string) (entity.User, error) {
+	fmt.Println(username, password)
 	sql, args, _ := ar.pg.Builder.
 		Select("id, email, username, password, created_at").
 		From(tableUsers).

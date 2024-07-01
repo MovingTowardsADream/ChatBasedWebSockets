@@ -47,7 +47,7 @@ type tokenClaims struct {
 }
 
 func (auc *AuthUseCase) GenerateToken(ctx context.Context, username, password string) (string, error) {
-	user, err := auc.auth.GetUser(ctx, username, password)
+	user, err := auc.auth.GetUser(ctx, username, auc.passwordHasher.Hash(password))
 	if err != nil {
 		return "", err
 	}

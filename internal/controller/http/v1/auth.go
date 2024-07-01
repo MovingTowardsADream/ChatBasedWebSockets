@@ -67,6 +67,35 @@ func (r *authRoutes) signUp(c *gin.Context) {
 	})
 }
 
+type signInInput struct {
+	Username string `json:"username"`
+	Password string `json:"password"`
+}
+
 func (r *authRoutes) signIn(c *gin.Context) {
+	var input signInInput
+
+	if err := c.Bind(&input); err != nil {
+		c.AbortWithStatus(http.StatusBadRequest)
+		return
+	}
+
 	// TODO Validate
+
+	token, err := r.authUseCase.GenerateToken(c.Request.Context(), input.Username, input.Password)
+
+	if err != nil {
+		// TODO Handler error
+
+		c.AbortWithStatus(http.StatusInternalServerError)
+		return
+	}
+
+	type response struct {
+		Token string `json:"token"`
+	}
+
+	c.JSON(http.StatusOK, response{
+		Token: token,
+	})
 }
