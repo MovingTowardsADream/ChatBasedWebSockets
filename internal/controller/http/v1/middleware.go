@@ -1,6 +1,8 @@
 package v1
 
 import (
+	"errors"
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"strings"
@@ -28,6 +30,8 @@ func (h *AuthMiddleware) UserIdentity() gin.HandlerFunc {
 			return
 		}
 
+		fmt.Println(userId)
+
 		c.Set(userIdCtx, userId)
 
 		c.Next()
@@ -47,4 +51,18 @@ func bearerToken(r *http.Request) (string, bool) {
 	}
 
 	return "", false
+}
+
+func getUserId(c *gin.Context) (int, error) {
+	id, ok := c.Get(userIdCtx)
+	if !ok {
+		return 0, errors.New("user id not found")
+	}
+
+	idInt, ok := id.(int)
+	if !ok {
+		return 0, errors.New("user id is of invalid type")
+	}
+
+	return idInt, nil
 }

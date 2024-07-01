@@ -1,6 +1,7 @@
 package v1
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
 )
 
@@ -13,5 +14,9 @@ func newUsersRoutes(handler *gin.RouterGroup) {
 }
 
 func (r *userRoutes) TestId(c *gin.Context) {
-
+	userId, err := getUserId(c)
+	if err != nil {
+		return
+	}
+	fmt.Println(userId)
 }
