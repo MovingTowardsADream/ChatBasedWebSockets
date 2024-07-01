@@ -2,13 +2,13 @@ include .env
 
 .PHONY:
 
-local-launch:
+local-launch-type-local:
 	go run ./cmd/app/main.go --config=./configs/local.yaml
 
-dev-launch:
+local-launch-type-dev:
 	go run ./cmd/app/main.go --config=./configs/dev.yaml
 
-launch:
+local-launch:
 	go run ./cmd/app/main.go --config=${CONFIG_PATH}
 
 docker-postgres-build:
@@ -19,3 +19,6 @@ docker-postgres-build:
       -e POSTGRES_DB=chat \
       -p 5432:5432 \
       postgres
+
+migrations-down:
+	migrate -path ./migrations -database 'postgres://postgres:admin@localhost:5432/chat?sslmode=disable' down

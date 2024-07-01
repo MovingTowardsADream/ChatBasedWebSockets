@@ -5,6 +5,7 @@ import (
 	"ChatBasedWebSockets/internal/usecase"
 	"context"
 	"github.com/gin-gonic/gin"
+	"net/http"
 )
 
 type Authorization interface {
@@ -26,10 +27,46 @@ func newAuthRoutes(handler *gin.RouterGroup, auc *usecase.AuthUseCase) {
 	handler.POST("/sign-in", r.signIn)
 }
 
-func (r *authRoutes) signUp(c *gin.Context) {
+type signUpInput struct {
+	Email    string `json:"email"`
+	Username string `json:"username"`
+	Password string `json:"password"`
+}
 
+func (r *authRoutes) signUp(c *gin.Context) {
+	var input signUpInput
+
+	if err := c.Bind(&input); err != nil {
+		c.AbortWithStatus(http.StatusBadRequest)
+		return
+	}
+
+	// TODO Validate input data
+
+	user := entity.User{
+		Email:    input.Email,
+		Username: input.Username,
+		Password: input.Password,
+	}
+
+	id, err := r.authUseCase.CreateUser(c.Request.Context(), user)
+
+	if err != nil {
+		// TODO Handler error
+
+		c.AbortWithStatus(http.StatusInternalServerError)
+		return
+	}
+
+	type response struct {
+		Id string `json:"id"`
+	}
+
+	c.JSON(http.StatusCreated, response{
+		Id: id,
+	})
 }
 
 func (r *authRoutes) signIn(c *gin.Context) {
-
+	// TODO Validate
 }

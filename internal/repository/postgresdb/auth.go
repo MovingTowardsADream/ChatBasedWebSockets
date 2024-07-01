@@ -26,6 +26,7 @@ func NewAuthRepo(pg *postgres.Postgres) *AuthRepo {
 func (ar *AuthRepo) CreateUser(ctx context.Context, user entity.User) (string, error) {
 	sql, args, _ := ar.pg.Builder.
 		Insert(tableUsers).
+		Columns("email", "username", "password").
 		Values(user.Email, user.Username, user.Password).
 		Suffix("RETURNING id").
 		ToSql()
@@ -60,6 +61,7 @@ func (ar *AuthRepo) GetUser(ctx context.Context, username, password string) (ent
 		&user.Password,
 		&user.CreatedAt,
 	)
+
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
 			return entity.User{}, repository_error.ErrNotFound

@@ -29,6 +29,8 @@ func NewRouter(handler *gin.Engine, l *slog.Logger, auc *usecase.AuthUseCase) {
 	{
 		newAuthRoutes(auth, auc)
 	}
+
+	// Authorization
 	authMiddleware := &AuthMiddleware{
 		auc,
 	}
