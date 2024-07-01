@@ -4,6 +4,7 @@ import (
 	"ChatBasedWebSockets/internal/entity"
 	"ChatBasedWebSockets/internal/usecase"
 	"context"
+	"errors"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
@@ -52,7 +53,13 @@ func (r *authRoutes) signUp(c *gin.Context) {
 	id, err := r.authUseCase.CreateUser(c.Request.Context(), user)
 
 	if err != nil {
-		// TODO Handler error
+		if errors.Is(err, usecase.ErrTimeout) {
+			c.AbortWithStatus(http.StatusGatewayTimeout)
+			return
+		} else if errors.Is(err, usecase.ErrAlreadyExists) {
+			c.AbortWithStatus(http.StatusBadRequest)
+			return
+		}
 
 		c.AbortWithStatus(http.StatusInternalServerError)
 		return
@@ -85,7 +92,13 @@ func (r *authRoutes) signIn(c *gin.Context) {
 	token, err := r.authUseCase.GenerateToken(c.Request.Context(), input.Username, input.Password)
 
 	if err != nil {
-		// TODO Handler error
+		if errors.Is(err, usecase.ErrTimeout) {
+			c.AbortWithStatus(http.StatusGatewayTimeout)
+			return
+		} else if errors.Is(err, usecase.ErrNotFound) {
+			c.AbortWithStatus(http.StatusBadRequest)
+			return
+		}
 
 		c.AbortWithStatus(http.StatusInternalServerError)
 		return
