@@ -2,12 +2,18 @@ package usecase
 
 import (
 	"ChatBasedWebSockets/internal/entity"
+	"ChatBasedWebSockets/internal/repository/repository_error"
 	"ChatBasedWebSockets/pkg/hasher"
+	"ChatBasedWebSockets/pkg/logger"
 	"context"
 	"errors"
 	"github.com/dgrijalva/jwt-go"
 	"log/slog"
 	"time"
+)
+
+const (
+	_defaultTimeout = 5 * time.Second
 )
 
 type Authorization interface {
@@ -37,8 +43,25 @@ func NewAuthUseCase(log *slog.Logger, auth Authorization,
 }
 
 func (auc *AuthUseCase) CreateUser(ctx context.Context, user entity.User) (string, error) {
+	ctxTimeout, cancel := context.WithTimeout(ctx, _defaultTimeout)
+	defer cancel()
+
 	user.Password = auc.passwordHasher.Hash(user.Password)
-	return auc.auth.CreateUser(ctx, user)
+
+	id, err := auc.auth.CreateUser(ctxTimeout, user)
+	if err != nil {
+		if errors.Is(err, ErrTimeout) {
+			return "", ErrTimeout
+		} else if errors.Is(err, repository_error.ErrAlreadyExists) {
+			return "", ErrAlreadyExists
+		}
+
+		auc.l.Error("AuthUseCase.CreateUser - auc.auth.CreateUser: ", logger.Err(err))
+
+		return "", err
+	}
+
+	return id, err
 }
 
 type tokenClaims struct {
@@ -47,8 +70,20 @@ type tokenClaims struct {
 }
 
 func (auc *AuthUseCase) GenerateToken(ctx context.Context, username, password string) (string, error) {
-	user, err := auc.auth.GetUser(ctx, username, auc.passwordHasher.Hash(password))
+	ctxTimeout, cancel := context.WithTimeout(ctx, _defaultTimeout)
+	defer cancel()
+
+	user, err := auc.auth.GetUser(ctxTimeout, username, auc.passwordHasher.Hash(password))
+
 	if err != nil {
+		if errors.Is(err, ErrTimeout) {
+			return "", ErrTimeout
+		} else if errors.Is(err, repository_error.ErrNotFound) {
+			return "", ErrNotFound
+		}
+
+		auc.l.Error("AuthUseCase.GenerateToken - auc.auth.GetUser: ", logger.Err(err))
+
 		return "", err
 	}
 
