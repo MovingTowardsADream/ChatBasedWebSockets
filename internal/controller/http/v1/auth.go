@@ -42,6 +42,8 @@ func (r *authRoutes) signUp(c *gin.Context) {
 		return
 	}
 
+	// TODO Validate input value
+
 	user := entity.User{
 		Email:    input.Email,
 		Username: input.Username,
@@ -84,6 +86,8 @@ func (r *authRoutes) signIn(c *gin.Context) {
 		c.AbortWithStatus(http.StatusBadRequest)
 		return
 	}
+
+	// TODO Validate input value
 
 	token, err := r.authUseCase.GenerateToken(c.Request.Context(), input.Username, input.Password)
 

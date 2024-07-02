@@ -10,10 +10,10 @@ type userRoutes struct{}
 func newUsersRoutes(handler *gin.RouterGroup) {
 	r := &userRoutes{}
 
-	handler.POST("/test", r.TestId)
+	handler.POST("/test", r.TestAuth)
 }
 
-func (r *userRoutes) TestId(c *gin.Context) {
+func (r *userRoutes) TestAuth(c *gin.Context) {
 	userId, err := getUserId(c)
 	if err != nil {
 		return
