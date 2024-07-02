@@ -29,9 +29,9 @@ func newAuthRoutes(handler *gin.RouterGroup, auc *usecase.AuthUseCase) {
 }
 
 type signUpInput struct {
-	Email    string `json:"email"`
-	Username string `json:"username"`
-	Password string `json:"password"`
+	Email    string `json:"email" validate:"required"`
+	Username string `json:"username" validate:"required"`
+	Password string `json:"password" validate:"required,password"`
 }
 
 func (r *authRoutes) signUp(c *gin.Context) {
@@ -41,8 +41,6 @@ func (r *authRoutes) signUp(c *gin.Context) {
 		c.AbortWithStatus(http.StatusBadRequest)
 		return
 	}
-
-	// TODO Validate input data
 
 	user := entity.User{
 		Email:    input.Email,
@@ -75,8 +73,8 @@ func (r *authRoutes) signUp(c *gin.Context) {
 }
 
 type signInInput struct {
-	Username string `json:"username"`
-	Password string `json:"password"`
+	Username string `json:"username" validate:"required"`
+	Password string `json:"password" validate:"required,password"`
 }
 
 func (r *authRoutes) signIn(c *gin.Context) {
@@ -86,8 +84,6 @@ func (r *authRoutes) signIn(c *gin.Context) {
 		c.AbortWithStatus(http.StatusBadRequest)
 		return
 	}
-
-	// TODO Validate
 
 	token, err := r.authUseCase.GenerateToken(c.Request.Context(), input.Username, input.Password)
 

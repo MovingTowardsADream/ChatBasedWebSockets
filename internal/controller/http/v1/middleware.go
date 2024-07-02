@@ -1,7 +1,6 @@
 package v1
 
 import (
-	"errors"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"strings"
@@ -53,12 +52,12 @@ func bearerToken(r *http.Request) (string, bool) {
 func getUserId(c *gin.Context) (string, error) {
 	id, ok := c.Get(userIdCtx)
 	if !ok {
-		return "", errors.New("user id not found")
+		return "", ErrIdNotFound
 	}
 
 	idString, ok := id.(string)
 	if !ok {
-		return "", errors.New("user id is of invalid type")
+		return "", ErrIdInvalidType
 	}
 
 	return idString, nil

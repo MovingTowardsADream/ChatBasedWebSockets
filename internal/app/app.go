@@ -27,11 +27,14 @@ func New(log *slog.Logger, cfg *config.Config) *App {
 
 	repoAuth := postgresdb.NewAuthRepo(pg)
 
-	passHasher := hasher.NewSHA1Hasher("salt")
+	passHasher := hasher.NewSHA1Hasher(cfg.Salt)
 
-	uscsAuth := usecase.NewAuthUseCase(log, repoAuth, "signKey", passHasher, cfg.TokenTTL)
+	uscsAuth := usecase.NewAuthUseCase(log, repoAuth, cfg.SignKey, passHasher, cfg.TokenTTL)
+
+	gin.SetMode(cfg.GinMode)
 
 	handler := gin.New()
+
 	v1.NewRouter(handler, log, uscsAuth)
 	httpServer := httpserver.New(log, handler, httpserver.Port(cfg.HTTP.Port), httpserver.WriteTimeout(cfg.HTTP.Timeout))
 

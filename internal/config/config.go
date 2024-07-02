@@ -15,16 +15,19 @@ const (
 
 type (
 	Config struct {
-		App  `yaml:"app"`
-		HTTP `yaml:"http"`
-		PG   `yaml:"pg"`
-		Log  `yaml:"logger"`
+		App     `yaml:"app"`
+		HTTP    `yaml:"http"`
+		PG      `yaml:"pg"`
+		Log     `yaml:"logger"`
+		GinMode string `yaml:"ginMode" env:"GIN_MODE" env-default:"release"`
 	}
 
 	App struct {
 		Name     string        `env:"APP_NAME"            env-default:"chat-based-websockets" yaml:"name"`
 		Version  string        `env:"APP_VERSION"         env-default:"1.0.0"         yaml:"version"`
 		TokenTTL time.Duration `yaml:"token_ttl" env-default:"1h"`
+		Salt     string        `env:"HASHER_SALT" env-required:"true"`
+		SignKey  string        `env:"JWT_SIGN_KEY" env-required:"true"`
 	}
 
 	HTTP struct {
