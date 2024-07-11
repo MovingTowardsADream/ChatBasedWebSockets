@@ -2,7 +2,6 @@ package ws
 
 import (
 	"errors"
-	"fmt"
 	"github.com/gorilla/websocket"
 	"net/http"
 	"sync"
@@ -57,7 +56,6 @@ func SendMessageHandler(event Event, c *Client) error {
 	for client := range c.manager.clients {
 		client.egress <- event
 	}
-	fmt.Println(event)
 	return nil
 }
 

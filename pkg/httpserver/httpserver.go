@@ -2,12 +2,17 @@ package httpserver
 
 import (
 	"context"
+	"crypto/tls"
 	"errors"
 	"fmt"
 	"log/slog"
-	"net"
 	"net/http"
 	"time"
+)
+
+const (
+	certFile = "./certificate/server.crt"
+	keyFile  = "./certificate/server.key"
 )
 
 const (
@@ -53,7 +58,16 @@ func (s *Server) MustRun() {
 func (s *Server) Run() error {
 	const op = "httpserver.Run"
 
-	l, err := net.Listen("tcp", s.httpServer.Addr)
+	cert, err := tls.LoadX509KeyPair(certFile, keyFile)
+	if err != nil {
+		return fmt.Errorf("%s: %w", op, err)
+	}
+
+	tlsConfig := &tls.Config{
+		Certificates: []tls.Certificate{cert},
+	}
+
+	l, err := tls.Listen("tcp", s.httpServer.Addr, tlsConfig)
 	if err != nil {
 		return fmt.Errorf("%s: %w", op, err)
 	}
