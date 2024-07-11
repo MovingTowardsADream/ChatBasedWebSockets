@@ -1,6 +1,8 @@
 package ws
 
 import (
+	"errors"
+	"fmt"
 	"github.com/gorilla/websocket"
 	"net/http"
 	"sync"
@@ -14,13 +16,49 @@ var websoketUpgrader = websocket.Upgrader{
 	},
 }
 
+var (
+	ErrEventNotSupported = errors.New("this event type is not supported")
+)
+
 type Manager struct {
 	clients ClientsList
 	mu      sync.RWMutex
+
+	handlers map[string]EventHandler
 }
 
 func NewManager() *Manager {
-	return &Manager{clients: make(ClientsList)}
+	m := &Manager{
+		clients:  make(ClientsList),
+		handlers: make(map[string]EventHandler),
+	}
+	m.setupEventHandlers()
+	return m
+}
+
+func (m *Manager) setupEventHandlers() {
+	m.handlers[EventSendMessage] = SendMessageHandler
+}
+
+func (m *Manager) routeEvent(event Event, c *Client) error {
+	// Check if Handler is present in Map
+	if handler, ok := m.handlers[event.Type]; ok {
+		// Launch Handler
+		if err := handler(event, c); err != nil {
+			return err
+		}
+		return nil
+	} else {
+		return ErrEventNotSupported
+	}
+}
+
+func SendMessageHandler(event Event, c *Client) error {
+	for client := range c.manager.clients {
+		client.egress <- event
+	}
+	fmt.Println(event)
+	return nil
 }
 
 func (m *Manager) ServeWs(w http.ResponseWriter, r *http.Request) {
