@@ -3,6 +3,7 @@ package app
 import (
 	"ChatBasedWebSockets/internal/config"
 	v1 "ChatBasedWebSockets/internal/controller/http/v1"
+	"ChatBasedWebSockets/internal/controller/http/v1/ws"
 	"ChatBasedWebSockets/internal/repository/postgresdb"
 	"ChatBasedWebSockets/internal/usecase"
 	"ChatBasedWebSockets/pkg/hasher"
@@ -37,7 +38,9 @@ func New(log *slog.Logger, cfg *config.Config) *App {
 
 	handler := gin.New()
 
-	v1.NewRouter(handler, log, uscsAuth, uscsUsers)
+	manager := ws.NewManager()
+
+	v1.NewRouter(handler, log, uscsAuth, uscsUsers, manager)
 	httpServer := httpserver.New(log, handler, httpserver.Port(cfg.HTTP.Port), httpserver.WriteTimeout(cfg.HTTP.Timeout))
 
 	return &App{

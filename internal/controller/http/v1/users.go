@@ -1,12 +1,13 @@
 package v1
 
 import (
-	"ChatBasedWebSockets/internal/controller/http/v1/ws"
 	"ChatBasedWebSockets/internal/entity"
 	"ChatBasedWebSockets/internal/usecase"
 	"context"
 	"github.com/gin-gonic/gin"
+	"github.com/gorilla/websocket"
 	"log"
+	"net/http"
 )
 
 type UsersWork interface {
@@ -21,7 +22,14 @@ func newUsersRoutes(handler *gin.RouterGroup, uuc *usecase.UsersUseCase) {
 	r := &userRoutes{usersUseCase: uuc}
 
 	handler.GET("/users", r.GetAllUsers)
-	handler.GET("/chatWs", r.Chat)
+}
+
+var upgrader = websocket.Upgrader{
+	ReadBufferSize:  1024,
+	WriteBufferSize: 1024,
+	CheckOrigin: func(r *http.Request) bool {
+		return true
+	},
 }
 
 func (r *userRoutes) GetAllUsers(c *gin.Context) {
@@ -29,7 +37,7 @@ func (r *userRoutes) GetAllUsers(c *gin.Context) {
 
 	r.usersUseCase.GetAllUsers(c.Request.Context(), usersCh)
 
-	conn, err := ws.Upgrader.Upgrade(c.Writer, c.Request, nil)
+	conn, err := upgrader.Upgrade(c.Writer, c.Request, nil)
 	defer conn.Close()
 
 	if err != nil {
@@ -40,13 +48,4 @@ func (r *userRoutes) GetAllUsers(c *gin.Context) {
 	for user := range usersCh {
 		conn.WriteJSON(user)
 	}
-}
-
-func (r *userRoutes) Chat(c *gin.Context) {
-	//userId, err := getUserId(c)
-	//if err != nil {
-	//	return
-	//}
-	//fmt.Println(userId)
-
 }

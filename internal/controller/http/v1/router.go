@@ -1,6 +1,7 @@
 package v1
 
 import (
+	"ChatBasedWebSockets/internal/controller/http/v1/ws"
 	"ChatBasedWebSockets/internal/usecase"
 	"github.com/gin-gonic/gin"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
@@ -10,7 +11,7 @@ import (
 	"net/http"
 )
 
-func NewRouter(handler *gin.Engine, l *slog.Logger, auc *usecase.AuthUseCase, uuc *usecase.UsersUseCase) {
+func NewRouter(handler *gin.Engine, l *slog.Logger, auc *usecase.AuthUseCase, uuc *usecase.UsersUseCase, m *ws.Manager) {
 	handler.Use(gin.Logger())
 	handler.Use(gin.Recovery())
 
@@ -43,5 +44,6 @@ func NewRouter(handler *gin.Engine, l *slog.Logger, auc *usecase.AuthUseCase, uu
 	h := handler.Group("/api/v1")
 	{
 		newUsersRoutes(h, uuc)
+		newChatRoutes(h, m)
 	}
 }
