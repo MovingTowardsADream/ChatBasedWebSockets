@@ -61,7 +61,7 @@ func (auc *AuthUseCase) CreateUser(ctx context.Context, user entity.User) (strin
 		return "", err
 	}
 
-	return id, err
+	return id, nil
 }
 
 type tokenClaims struct {

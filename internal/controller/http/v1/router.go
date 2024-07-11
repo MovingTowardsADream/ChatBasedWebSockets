@@ -10,7 +10,7 @@ import (
 	"net/http"
 )
 
-func NewRouter(handler *gin.Engine, l *slog.Logger, auc *usecase.AuthUseCase) {
+func NewRouter(handler *gin.Engine, l *slog.Logger, auc *usecase.AuthUseCase, uuc *usecase.UsersUseCase) {
 	handler.Use(gin.Logger())
 	handler.Use(gin.Recovery())
 
@@ -30,13 +30,18 @@ func NewRouter(handler *gin.Engine, l *slog.Logger, auc *usecase.AuthUseCase) {
 		newAuthRoutes(auth, auc)
 	}
 
-	// Authorization
-	authMiddleware := &AuthMiddleware{
-		auc,
-	}
+	//Authorization
+	//authMiddleware := &AuthMiddleware{
+	//	auc,
+	//}
 
-	h := handler.Group("/api/v1", authMiddleware.UserIdentity())
+	//h := handler.Group("/api/v1", authMiddleware.UserIdentity())
+	//{
+	//	newUsersRoutes(h)
+	//}
+
+	h := handler.Group("/api/v1")
 	{
-		newUsersRoutes(h)
+		newUsersRoutes(h, uuc)
 	}
 }

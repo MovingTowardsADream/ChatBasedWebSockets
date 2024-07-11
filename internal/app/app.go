@@ -26,16 +26,18 @@ func New(log *slog.Logger, cfg *config.Config) *App {
 	}
 
 	repoAuth := postgresdb.NewAuthRepo(pg)
+	repoUsers := postgresdb.NewUserRepo(pg)
 
 	passHasher := hasher.NewSHA1Hasher(cfg.Salt)
 
 	uscsAuth := usecase.NewAuthUseCase(log, repoAuth, cfg.SignKey, passHasher, cfg.TokenTTL)
+	uscsUsers := usecase.NewUsersUseCase(log, repoUsers)
 
 	gin.SetMode(cfg.GinMode)
 
 	handler := gin.New()
 
-	v1.NewRouter(handler, log, uscsAuth)
+	v1.NewRouter(handler, log, uscsAuth, uscsUsers)
 	httpServer := httpserver.New(log, handler, httpserver.Port(cfg.HTTP.Port), httpserver.WriteTimeout(cfg.HTTP.Timeout))
 
 	return &App{

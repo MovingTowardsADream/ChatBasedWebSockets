@@ -1,0 +1,24 @@
+DOCTYPE html>
+<html>
+<head>
+    <title>Stock Quotes</title>
+</head>
+<body>
+<h1>Real-time Stock Quotes</h1>
+<pre id="quotes"></pre>
+
+<script>
+    let ws = new WebSocket("ws://localhost:8080/api/v1/ws");
+    ws.onmessage = function(event) {
+        let quote = JSON.parse(event.data);
+        document.getElementById("quotes").textContent += JSON.stringify(quote, null, 2) + "\n";
+    };
+    ws.onclose = function(event) {
+        console.log("WebSocket closed:", event);
+    };
+    ws.onerror = function(event) {
+        console.log("WebSocket error:", event);
+    };
+</script>
+</body>
+</html>

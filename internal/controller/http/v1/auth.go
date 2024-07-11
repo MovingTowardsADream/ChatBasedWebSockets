@@ -26,6 +26,7 @@ func newAuthRoutes(handler *gin.RouterGroup, auc *usecase.AuthUseCase) {
 
 	handler.POST("/sign-up", r.signUp)
 	handler.POST("/sign-in", r.signIn)
+	handler.POST("/sign-out", r.signOut)
 }
 
 type signUpInput struct {
@@ -111,4 +112,8 @@ func (r *authRoutes) signIn(c *gin.Context) {
 	c.JSON(http.StatusOK, response{
 		Token: token,
 	})
+}
+
+func (r *authRoutes) signOut(c *gin.Context) {
+
 }
